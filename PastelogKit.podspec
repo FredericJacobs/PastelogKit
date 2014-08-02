@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "PastelogKit"
-  s.version      = "1.0"
+  s.version      = "1.1"
   s.summary      = "A simple library that provides an easy fragment allowing users to throw debug logs in a pastebin (currently gist) online."
 
   s.homepage     = "https://github.com/FredericJacobs/PastelogKit"
@@ -41,7 +41,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-   s.source       = { :git => "https://github.com/FredericJacobs/PastelogKit.git", :tag => "1.0" }
+   s.source       = { :git => "https://github.com/FredericJacobs/PastelogKit.git", :tag => "1.1" }
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #

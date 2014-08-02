@@ -80,7 +80,6 @@ static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection{
-
     NSError *error;
     NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:self.responseData options:0 error:&error];
     if (!error) {
@@ -93,7 +92,7 @@ static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error{
     DDLogError(@"Uploading logs failed with error: %@", error);
-    self.block(false,nil);
+    self.block(error,nil);
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response{
@@ -102,10 +101,9 @@ static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 
     if ( [httpResponse statusCode] != 201) {
         DDLogError(@"Failed to submit debug log: %@", httpResponse.debugDescription);
-        self.block(false,nil);
+        self.block([NSError errorWithDomain:@"PastelogKit" code:10001 userInfo:@{}],nil);
     }
 }
-
 
 +(NSString*)gistDescription{
     size_t size;
