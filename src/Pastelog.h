@@ -10,10 +10,14 @@
 #import <CocoaLumberjack/DDLog.h>
 #import <CocoaLumberjack/DDFileLogger.h>
 
-@interface Pastelog : NSObject <NSURLConnectionDelegate, NSURLConnectionDataDelegate>
+@interface Pastelog : NSObject <NSURLConnectionDelegate, NSURLConnectionDataDelegate, UIAlertViewDelegate>
 
 typedef void (^successBlock)(NSError *error, NSString *urlString);
 
++(void)reportErrorAndSubmitLogsWithAlertTitle:(NSString*)alertTitle alertBody:(NSString*)alertBody;
++(void)reportErrorAndSubmitLogsWithAlertTitle:(NSString*)alertTitle alertBody:(NSString*)alertBody completionBlock:(successBlock)block;
+
++(void)submitLogs;
 +(void)submitLogsWithCompletion:(successBlock)block;
 +(void)submitLogsWithCompletion:(successBlock)block forFileLogger:(DDFileLogger*)fileLogger;
 
