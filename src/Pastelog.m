@@ -10,7 +10,7 @@
 #include <sys/types.h>
 #include <sys/sysctl.h>
 
-static const int ddLogLevel = DDLogLevelAll;
+static const NSUInteger ddLogLevel = DDLogLevelAll;
 
 @interface Pastelog ()
 
@@ -56,45 +56,45 @@ static const int ddLogLevel = DDLogLevelAll;
 }
 
 +(void)submitLogsWithCompletion:(successBlock)block forFileLogger:(DDFileLogger*)fileLogger {
-    
+
     [self sharedManager].block = block;
-    
+
     [self sharedManager].loadingAlertView =  [[UIAlertView alloc] initWithTitle:@"Sending debug log ..."
                                                                          message:nil delegate:self
                                                                cancelButtonTitle:nil
                                                                otherButtonTitles:nil];
     [[self sharedManager].loadingAlertView show];
-    
+
     NSArray *fileNames = fileLogger.logFileManager.sortedLogFileNames;
     NSArray *filePaths = fileLogger.logFileManager.sortedLogFilePaths;
-    
+
     NSMutableDictionary *gistFiles = [@{} mutableCopy];
-    
+
     NSError *error;
-    
+
     for (unsigned int i = 0; i < [filePaths count]; i++) {
         [gistFiles setObject:@{@"content":[NSString stringWithContentsOfFile:[filePaths objectAtIndex:i] encoding:NSUTF8StringEncoding error:&error]} forKey:[fileNames objectAtIndex:i]];
     }
-    
+
     if (error) {
     }
-    
+
     NSDictionary *gistDict = @{@"description":[self gistDescription], @"files":gistFiles};
-    
+
     NSData *postData = [NSJSONSerialization dataWithJSONObject:gistDict options:0 error:nil];
-    
+
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[[NSURL alloc] initWithString:@"https://api.github.com/gists"] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:30];
-    
+
     [[self sharedManager] setResponseData:[NSMutableData data]];
     [[self sharedManager] setBlock:block];
-    
+
     [request setHTTPMethod:@"POST"];
     [request setHTTPBody:postData];
-    
+
     NSURLConnection *connection = [NSURLConnection connectionWithRequest:request delegate:[self sharedManager]];
-    
+
     [connection start];
-    
+
 }
 
 +(Pastelog*)sharedManager {
@@ -120,9 +120,9 @@ static const int ddLogLevel = DDLogLevelAll;
     sysctlbyname("hw.machine", machine, &size, NULL, 0);
     NSString *platform = [NSString stringWithUTF8String:machine];
     free(machine);
-    
+
     NSString *gistDesc = [NSString stringWithFormat:@"iPhone Version: %@, iOS Version: %@", platform,[UIDevice currentDevice].systemVersion];
-    
+
     return gistDesc;
 }
 
@@ -134,7 +134,7 @@ static const int ddLogLevel = DDLogLevelAll;
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     [self.loadingAlertView dismissWithClickedButtonIndex:0 animated:YES];
-    
+
     NSError *error;
     NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:self.responseData options:0 error:&error];
     if (!error) {
@@ -146,9 +146,9 @@ static const int ddLogLevel = DDLogLevelAll;
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
-    
+
     NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
-    
+
     if ( [httpResponse statusCode] != 201) {
         DDLogError(@"Failed to submit debug log: %@", httpResponse.debugDescription);
         [self.loadingAlertView dismissWithClickedButtonIndex:0 animated:YES];
@@ -173,7 +173,7 @@ static const int ddLogLevel = DDLogLevelAll;
             } else{
                 [[self class] submitLogs];
             }
-            
+
         } else{
             // User declined, nevermind.
         }
@@ -190,9 +190,9 @@ static const int ddLogLevel = DDLogLevelAll;
 
 - (void)submitEmail:(NSString*)url {
     NSString *emailAddress = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"LOGS_EMAIL"];
-    
+
     NSString *urlString = [NSString stringWithString: [[NSString stringWithFormat:@"mailto:%@?subject=iOS%%20Debug%%20Log&body=", emailAddress] stringByAppendingString:[[NSString stringWithFormat:@"Log URL: %@ \n Tell us about the issue: ", url]stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]]];
-    
+
     [UIApplication.sharedApplication openURL: [NSURL URLWithString: urlString]];
 }
 
