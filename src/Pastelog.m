@@ -10,7 +10,7 @@
 #include <sys/types.h>
 #include <sys/sysctl.h>
 
-static const int ddLogLevel = LOG_LEVEL_VERBOSE;
+static const int ddLogLevel = DDLogLevelAll;
 
 @interface Pastelog ()
 

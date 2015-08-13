@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <CocoaLumberjack/DDLog.h>
+#import <CocoaLumberjack/CocoaLumberjack.h>
 #import <CocoaLumberjack/DDFileLogger.h>
 
 @interface Pastelog : NSObject <NSURLConnectionDelegate, NSURLConnectionDataDelegate, UIAlertViewDelegate>

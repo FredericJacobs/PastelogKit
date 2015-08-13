@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "PastelogKit"
-  s.version      = "1.2"
+  s.version      = "1.3"
   s.summary      = "A simple library that provides an easy fragment allowing users to throw debug logs in a pastebin (currently gist) online."
 
   s.homepage     = "https://github.com/FredericJacobs/PastelogKit"
@@ -89,6 +89,6 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   # s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
-  s.dependency 'CocoaLumberjack', '~> 1.9'
+  s.dependency 'CocoaLumberjack', '~> 2.0'
 
 end
