@@ -17,6 +17,7 @@ static const NSUInteger ddLogLevel = DDLogLevelAll;
 @property (nonatomic)UIAlertView *reportAlertView;
 @property (nonatomic)UIAlertView *loadingAlertView;
 @property (nonatomic)UIAlertView *submitAlertView;
+@property (nonatomic)UIAlertView *infoAlertView;
 @property (nonatomic)NSMutableData *responseData;
 @property (nonatomic, copy)successBlock block;
 @property (nonatomic, copy)NSString *gistURL;
@@ -42,7 +43,7 @@ static const NSUInteger ddLogLevel = DDLogLevelAll;
     [self submitLogsWithCompletion:^(NSError *error, NSString *urlString) {
         if (!error) {
             sharedManager.gistURL = urlString;
-            sharedManager.submitAlertView = [[UIAlertView alloc]initWithTitle:@"Submit Debug Log" message:@"Bugs can be reported by email or by copying the log in a GitHub Issue (advanced)." delegate:[self sharedManager] cancelButtonTitle:@"GitHub Issue" otherButtonTitles:@"Email", nil];
+            sharedManager.submitAlertView = [[UIAlertView alloc]initWithTitle:@"Submit Debug Log" message:@"Bugs can be reported by email or by copying the log in a GitHub Issue (advanced). You can also get the gist link directly in your clipboard." delegate:[self sharedManager] cancelButtonTitle:@"GitHub Issue" otherButtonTitles:@"Email", @"Clipboard", nil];
             [sharedManager.submitAlertView show];
         } else{
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Failed to submit debug log" message:@"The debug log could not be submitted. Please try again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
@@ -179,10 +180,15 @@ static const NSUInteger ddLogLevel = DDLogLevelAll;
         }
     } else if (alertView == self.submitAlertView) {
         if (buttonIndex == 0) {
-            [self pasteBoardCopy:self.gistURL];
-        } else{
+            [self prepareRedirection:self.gistURL];
+        } else if (buttonIndex == 1) {
             [self submitEmail:self.gistURL];
+        } else {
+            UIPasteboard *pb = [UIPasteboard generalPasteboard];
+            [pb setString:self.gistURL];
         }
+    } else if (alertView == self.infoAlertView) {
+        [UIApplication.sharedApplication openURL:[NSURL URLWithString:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"LOGS_URL"]]];
     }
 }
 
@@ -196,10 +202,11 @@ static const NSUInteger ddLogLevel = DDLogLevelAll;
     [UIApplication.sharedApplication openURL: [NSURL URLWithString: urlString]];
 }
 
-- (void)pasteBoardCopy:(NSString*)url {
+- (void)prepareRedirection:(NSString*)url {
     UIPasteboard *pb = [UIPasteboard generalPasteboard];
     [pb setString:url];
-    [UIApplication.sharedApplication openURL:[NSURL URLWithString:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"LOGS_URL"]]];
+    self.infoAlertView = [[UIAlertView alloc]initWithTitle:@"GitHub redirection" message:@"The gist link was copied in your clipboard. You are about to be redirected to the GitHub issue list." delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
+    [self.infoAlertView show];
 }
 
 @end
