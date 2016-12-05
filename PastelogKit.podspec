@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "PastelogKit"
-  s.version      = "1.3"
+  s.version      = "1.4"
   s.summary      = "A simple library that provides an easy fragment allowing users to throw debug logs in a pastebin (currently gist) online."
 
   s.homepage     = "https://github.com/FredericJacobs/PastelogKit"
