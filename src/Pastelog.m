@@ -10,7 +10,7 @@
 #include <sys/types.h>
 #include <sys/sysctl.h>
 
-static const NSUInteger ddLogLevel = DDLogLevelAll;
+ #define LOG_LEVEL_DEF DDLogLevelAll
 
 @interface Pastelog ()
 
