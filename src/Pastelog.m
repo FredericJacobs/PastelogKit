@@ -46,7 +46,7 @@
             sharedManager.submitAlertView = [[UIAlertView alloc] initWithTitle:@"One More Step" message:@"What would you like to do with the link to your debug log?" delegate:[self sharedManager] cancelButtonTitle:@"Create GitHub Issue" otherButtonTitles:@"Email Link", @"Copy Link", nil];
             [sharedManager.submitAlertView show];
         } else{
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Failed to submit debug log" message:@"The debug log could not be submitted. Please try again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Failed to submit debug log" message:error.localizedDescription delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
             [alertView show];
         }
     }];
