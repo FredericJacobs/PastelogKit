@@ -27,26 +27,43 @@
 
 @implementation Pastelog
 
-+(void)reportErrorAndSubmitLogsWithAlertTitle:(NSString*)alertTitle alertBody:(NSString*)alertBody {
++(void)reportErrorAndSubmitLogsWithAlertTitle:(NSString*)alertTitle alertBody:(NSString*)alertBody
+{
     [self reportErrorAndSubmitLogsWithAlertTitle:alertTitle alertBody:alertBody completionBlock:nil];
 }
 
-+(void)reportErrorAndSubmitLogsWithAlertTitle:(NSString*)alertTitle alertBody:(NSString*)alertBody completionBlock:(successBlock)block {
++(void)reportErrorAndSubmitLogsWithAlertTitle:(NSString*)alertTitle
+                                    alertBody:(NSString*)alertBody
+                              completionBlock:(successBlock)block
+{
     Pastelog *sharedManager = [self sharedManager];
     sharedManager.block = block;
-    sharedManager.reportAlertView = [[UIAlertView alloc] initWithTitle:alertTitle message:alertBody delegate:[self sharedManager] cancelButtonTitle:@"Yes" otherButtonTitles:@"No", nil];
+    sharedManager.reportAlertView = [[UIAlertView alloc] initWithTitle:alertTitle
+                                                               message:alertBody
+                                                              delegate:[self sharedManager]
+                                                     cancelButtonTitle:@"Yes"
+                                                     otherButtonTitles:@"No", nil];
     [sharedManager.reportAlertView show];
 }
 
-+(void)submitLogs {
++(void)submitLogs
+{
     Pastelog *sharedManager = [self sharedManager];
     [self submitLogsWithCompletion:^(NSError *error, NSString *urlString) {
         if (!error) {
             sharedManager.gistURL = urlString;
-            sharedManager.submitAlertView = [[UIAlertView alloc]initWithTitle:@"Submit Debug Log" message:@"Bugs can be reported by email or by copying the log in a GitHub Issue (advanced). You can also get the gist link directly in your clipboard." delegate:[self sharedManager] cancelButtonTitle:@"GitHub Issue" otherButtonTitles:@"Email", @"Clipboard", nil];
+            sharedManager.submitAlertView = [[UIAlertView alloc]initWithTitle:@"Submit Debug Log"
+                                                                      message:@"Bugs can be reported by email or by copying the log in a GitHub Issue (advanced). You can also get the gist link directly in your clipboard."
+                                                                     delegate:[self sharedManager]
+                                                            cancelButtonTitle:@"Cancel"
+                                                            otherButtonTitles:@"Email", @"Clipboard", @"GitHub Issue", nil];
             [sharedManager.submitAlertView show];
         } else{
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Failed to submit debug log" message:@"The debug log could not be submitted. Please try again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Failed to submit debug log"
+                                                                message:@"The debug log could not be submitted. Please try again."
+                                                               delegate:nil
+                                                      cancelButtonTitle:@"OK"
+                                                      otherButtonTitles:nil, nil];
             [alertView show];
         }
     }];
@@ -194,12 +211,14 @@
         }
     } else if (alertView == self.submitAlertView) {
         if (buttonIndex == 0) {
-            [self prepareRedirection:self.gistURL];
+            // User canceled, bail.
         } else if (buttonIndex == 1) {
             [self submitEmail:self.gistURL];
-        } else {
+        } else if (buttonIndex == 2){
             UIPasteboard *pb = [UIPasteboard generalPasteboard];
             [pb setString:self.gistURL];
+        } else if (buttonIndex == 3) {
+            [self prepareRedirection:self.gistURL];
         }
     } else if (alertView == self.infoAlertView) {
         [UIApplication.sharedApplication openURL:[NSURL URLWithString:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"LOGS_URL"]]];
