@@ -80,9 +80,22 @@
     if (error) {
     }
 
-    NSDictionary *gistDict = @{@"description":[self gistDescription], @"files":gistFiles};
+    // Extract Github Auth token from local storage.
+    // Replace "Forsta-values" with the path to plist which contains github auth token
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"Forsta-values" ofType:@"plist"];
+    NSFileManager *fileManager = [NSFileManager defaultManager];  
+    if (![fileManager fileExistsAtPath: path]) {
+        DDLogError(@"Tokens Not Found.");
+    }
+    NSDictionary *tokenDict = [[NSDictionary alloc] initWithContentsOfFile:path];
 
-    NSData *postData = [NSJSONSerialization dataWithJSONObject:gistDict options:0 error:nil];
+    // Replace "GITHUB_GIST_TOKEN" with key assigned in above plist
+    NSString *gistToken = [tokenDict objectForKey:@"GITHUB_GIST_TOKEN"];
+    /////////////
+    
+    NSDictionary *gistPayload = @{@"description":[self gistDescription], @"files":gistFiles};
+
+    NSData *postData = [NSJSONSerialization dataWithJSONObject:gistPayload options:0 error:nil];
 
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[[NSURL alloc] initWithString:@"https://api.github.com/gists"] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:30];
 
@@ -90,6 +103,7 @@
     [[self sharedManager] setBlock:block];
 
     [request setHTTPMethod:@"POST"];
+    [request setValue:[NSString stringWithFormat:@"token %@", gistToken] forHTTPHeaderField:@"Authorization"];
     [request setHTTPBody:postData];
 
     NSURLConnection *connection = [NSURLConnection connectionWithRequest:request delegate:[self sharedManager]];
